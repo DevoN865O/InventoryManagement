@@ -1,5 +1,5 @@
-package org.millardps.PracticeCreate;
-
+package org.millardps.InventoryManagement;
+import java.util.*;
 public abstract class Item {
 	int quantity;
 	String name;
