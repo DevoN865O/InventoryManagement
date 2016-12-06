@@ -21,7 +21,7 @@ public class PassMan{
 				m.delete();
 				System.out.println("Inventory Cleared.");
 			}
-			System.out.println("Welcome to the inventory handler! Please set a password. This can be changed at any time with the 'passwd' command.");
+			System.out.println("Welcome to Oxi Inventory Management! Please set a password. This can be changed at any time with the 'passwd' command.");
 			try{
 				PrintWriter pWrite= new PrintWriter("pmem.txt","UTF-8");
 				while (true){
@@ -40,7 +40,16 @@ public class PassMan{
 					if (newPass.equals(verPass) && cn){
 						pWrite.println(encode(newPass));
 						pWrite.close();
-						//Console console=new Console();
+						try{
+							new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+						}
+						catch(InterruptedException e){
+							System.out.println("InterruptedException");
+						}
+						catch(IOException e){
+							System.out.println("IOException");
+						}
+						Console console=new Console();
 						break;
 					}
 				}
@@ -52,11 +61,20 @@ public class PassMan{
 		else if (p.exists()){
 			try{
 				Scanner scanner3=new Scanner(new File("pmem.txt"));
-				System.out.println("Welcome back to the inventory handler! Please enter your password!");
+				System.out.println("Welcome back to Oxi Inventory Management! Please enter your password!");
 				oldPass=scanner.nextLine();
 				String readPass=decode(scanner3.nextLine());
 				if (oldPass.equals(readPass)){
-					//Console console=new Console();
+					try{
+						new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+					}
+					catch(InterruptedException e){
+						System.out.println("InterruptedException");
+					}
+					catch(IOException e){
+						System.out.println("IOException");
+					}
+					Console console=new Console();
 				}
 				else{
 					System.out.println("Password Incorrect.");
