@@ -23,9 +23,11 @@ public class Console{
         nextCommand();
     }
 	public void nextCommand(){
+		//System.out.println("update");
 		updateArrays();
         System.out.print(">");
         command = scanner.nextLine();
+        System.out.println(command);
         try{
             if(command.toLowerCase().equals("help")){
                 help();
@@ -47,6 +49,23 @@ public class Console{
                     System.out.println("  /Q           Item quantity.");
                     nextCommand();
                 }
+            } 
+			else if(command.toLowerCase().equals("sell")){
+                sell();
+            } 
+			else if(command.toLowerCase().equals("clear")){//claims command does not exist
+                clear();
+            } 
+			else if(command.toLowerCase().equals("exit")){//claims command does not exist
+                writeArray();
+            } 
+			else if(command.toLowerCase().substring(0, 3).equals("cat")){
+                System.out.println(command.substring(4, command.length()));
+                nextCommand();
+            } 
+			else if(command.toLowerCase().equals("passwd")){
+                newPass();
+                nextCommand();
             } 
 			else if(command.toLowerCase().equals("about")){
                 about();
@@ -81,29 +100,15 @@ public class Console{
                     nextCommand();
 				}
             } 
-			else if(command.toLowerCase().equals("sell")){
-                sell();
-            } 
-			else if(command.toLowerCase().equals("clear")){//claims command does not exist
-                clear();
-            } 
-			else if(command.toLowerCase().equals("exit")){//claims command does not exist
-                writeArray();
-            } 
-			else if(command.toLowerCase().substring(0, 3).equals("cat")){
-                System.out.println(command.substring(4, command.length()));
-                nextCommand();
-            } 
-			else if(command.toLowerCase().equals("passwd")){
-                newPass();
-                nextCommand();
-            } 
+		
 			else{
+				//System.out.println("Else: " + command);
                 System.out.println("'" + command + "' is not recognized as an internal command.");
                 nextCommand();
             }
         }
         catch (StringIndexOutOfBoundsException e){
+        	//System.out.println("Else: " + command);
             System.out.println("'" + command + "' is not recognized as an internal command.");
             nextCommand();
         }
@@ -280,25 +285,34 @@ public class Console{
 			filter.add(tmp.get(i));
 		}
 		for(int i=0;i<filter.size();i++){
+			//System.out.println("Name: " + name);
+			//System.out.println(categories.contains(name));
+			//System.out.println(categories);
 			if((! name.equals("default0x0") && (! names.get(i).equals(name)))){
 			filter.set(i, "!!!!remove!!!!");
 			}
-			if((! quantity.equals("default0x0") && (! quantities.get(i).equals(name)))){
+			if((! quantity.equals("default0x0") && (! quantities.get(i).equals(quantity)))){
 				filter.set(i, "!!!!remove!!!!");
 			}
-			if((! category.equals("default0x0") && (! categories.get(i).equals(name)))){
+			if((! category.equals("default0x0") && (! categories.get(i).equals(category)))){
 				filter.set(i, "!!!!remove!!!!");
 			}
-			if((! price.equals("default0x0") && (! prices.get(i).equals(name)))){
+			if((! price.equals("default0x0") && (! prices.get(i).equals(price)))){
 				filter.set(i, "!!!!remove!!!!");
 			}
-			if((! description.equals("default0x0") && (! descriptions.get(i).equals(name)))){
+			if((! description.equals("default0x0") && (! descriptions.get(i).equals(description)))){
 				filter.set(i, "!!!!remove!!!!");
 			}
+//			if(filter.get(i).equals("!!!!remove!!!!")){
+//				filter.remove(i);
+//			}
+		}
+		for(int i = 0; i < filter.size(); i++){
 			if(filter.get(i).equals("!!!!remove!!!!")){
 				filter.remove(i);
 			}
 		}
+		System.out.println(filter.size());
 		for(int i=0;i<filter.size();i++){
 			System.out.println(filter.get(i));
 		}
@@ -365,7 +379,7 @@ public class Console{
 			while(! tmp.get(i).substring(0,x).contains("-")){
 				x++;
 			}
-			names.add(tmp.get(i).substring(0,x-2).trim());
+			names.add(tmp.get(i).substring(0,x-1).trim());
 			int x1=x;
 			while(! tmp.get(i).substring(x,x1).contains("-")){
 				x1++;
