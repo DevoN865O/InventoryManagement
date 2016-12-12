@@ -21,7 +21,7 @@ public class PassMan{
 				m.delete();
 				System.out.println("Inventory Cleared.");
 			}
-			System.out.println("Welcome to Oxi Inventory Management! Please set a password. This can be changed at any time with the 'passwd' command.");
+			System.out.print("Welcome to Oxi Inventory Management! Please set a password. This can be changed at any time with the 'passwd' command.");
 			try{
 				PrintWriter pWrite= new PrintWriter("pmem.txt","UTF-8");
 				while (true){
