@@ -3,11 +3,13 @@ import java.io.*;
 import java.util.*;
 public class Console{
     Scanner scanner= new Scanner(System.in);
+	Screen screen=new Screen();
     private File p= new File("pmem.txt");
     private File m= new File("mem.txt");
     public String[] letters= new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "_", "-", "=", "+", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", " "};
     public String[] shifted= new String[]{"m", "l", "8", "q", "A", "P", "R", "W", "C", "h", "n", "k", "1", "7", "z", "B", "o", "9", "2", "g", "f", "6", "p", "O", "0", "a", "e", "3", "j", "Q", "V", "-", "4", "=", "b", "d", "J", "N", " ", "X", "", "M", "I", "U", "J", "i", "5", "y", "c", "w", "*", "T", "$", "%", "S", "v", "^", "L", "+", "&", "Y", "u", "#", "D", "_", "", "r", "Z", "H", "!", "s", "@", "F", "t", "x", "G", "E"};
     private String command;
+	private int gross;
     private ArrayList<String>tmp= new ArrayList<String>();
     private ArrayList<String>names= new ArrayList<String>();
     private ArrayList<String>prices= new ArrayList<String>();
@@ -16,16 +18,17 @@ public class Console{
     private ArrayList<String>quantities= new ArrayList<String>();
 	private ArrayList<String>filter= new ArrayList<String>();
 	Console(){
+		gross=0;
         popArray();
-        System.out.println("Oxi Inventory Management [Version Beta 0.8.2]");
-        System.out.println("(c) 2016 MidWestOxidation Enterprise. All rights reserved.");
-        System.out.println();
+        writeln("Oxi Inventory Management [Version Beta 0.8.2]");
+        writeln("(c) 2016 MidWestOxidation Enterprise. All rights reserved.");
+        writeln();
         nextCommand();
     }
 	public void nextCommand(){
-		//System.out.println("update");
+		//writeln("update");
 		updateArrays();
-        System.out.print(">");
+        write(">");
         command = scanner.nextLine();
         try{
             if(command.toLowerCase().equals("help")){
@@ -36,21 +39,21 @@ public class Console{
                     add(command);
                 }
 				else{
-                    System.out.println("Appends items to the inventory.");
-                    System.out.println();
-                    System.out.println("USAGE:");
-                    System.out.println("add [/N] [/C] [/P] [/D]");
-                    System.out.println();
-                    System.out.println("  /N           Item name.");
-                    System.out.println("  /C           Item category.");
-                    System.out.println("  /P           Item price.");
-                    System.out.println("  /D           Item description.");
-                    System.out.println("  /Q           Item quantity.");
+                    writeln("Appends items to the inventory.");
+                    writeln();
+                    writeln("USAGE:");
+                    writeln("add [/N] [/C] [/P] [/D]");
+                    writeln();
+                    writeln("  /N           Item name.");
+                    writeln("  /C           Item category.");
+                    writeln("  /P           Item price.");
+                    writeln("  /D           Item description.");
+                    writeln("  /Q           Item quantity.");
                     nextCommand();
                 }
             } 
 			else if(command.toLowerCase().equals("sell")){
-                sell();
+                sell(select());
             } 
 			else if(command.toLowerCase().equals("clear")){//claims command does not exist
                 clear();
@@ -60,10 +63,10 @@ public class Console{
             } 
 			else if(command.toLowerCase().substring(0, 3).equals("cat")){
 				if(command.length()==3){
-					System.out.println();
+					writeln();
 				}
                 else{
-					System.out.println(command.substring(4, command.length()));
+					writeln(command.substring(4, command.length()));
                 }
 				nextCommand();
             } 
@@ -72,7 +75,7 @@ public class Console{
 				tmp.clear();
 				popArray();
 				updateArrays();
-				System.out.println("Saved successfully.");
+				writeln("Saved successfully.");
 				nextCommand();
 			}
 			else if(command.toLowerCase().equals("passwd")){
@@ -88,7 +91,7 @@ public class Console{
 			}
 			else if(command.toLowerCase().substring(0,7).equals("display")){
 				if(command.toLowerCase().contains("/i") && command.toLowerCase().contains("/a")){
-					System.out.println("Input invalid.");
+					writeln("Input invalid.");
 					nextCommand();
 				}
 				else if(command.toLowerCase().contains("/a")){
@@ -98,13 +101,13 @@ public class Console{
 					displayDetail(select());
 				}
 				else{
-					System.out.println("Displays items stored in the inventory");
-                    System.out.println();
-                    System.out.println("USAGE:");
-                    System.out.println("display [/I] || display [/A]");
-                    System.out.println();
-                    System.out.println("  /I           Displays a specific item.");
-                    System.out.println("  /A           Displays all items.");
+					writeln("Displays items stored in the inventory");
+                    writeln();
+                    writeln("USAGE:");
+                    writeln("display [/I] || display [/A]");
+                    writeln();
+                    writeln("  /I           Displays a specific item.");
+                    writeln("  /A           Displays all items.");
                     nextCommand();
 				}
 			}
@@ -116,31 +119,48 @@ public class Console{
 					search(command);
 				}
 				else{
-					System.out.println("Searches the inventory based upon given criteria.");
-                    System.out.println();
-                    System.out.println("USAGE:");
-                    System.out.println("search [/N] [/C] [/P] [/D]");
-                    System.out.println();
-                    System.out.println("  /N           Item name.");
-                    System.out.println("  /C           Item category.");
-                    System.out.println("  /P           Item price.");
-                    System.out.println("  /D           Item description.");
-                    System.out.println("  /Q           Item quantity.");
+					writeln("Searches the inventory based upon given criteria.");
+                    writeln();
+                    writeln("USAGE:");
+                    writeln("search [/N] [/C] [/P] [/D]");
+                    writeln();
+                    writeln("  /N           Item name.");
+                    writeln("  /C           Item category.");
+                    writeln("  /P           Item price.");
+                    writeln("  /D           Item description.");
+                    writeln("  /Q           Item quantity.");
                     nextCommand();
 				}
             } 
 			else{
-				//System.out.println("Else: " + command);
-                System.out.println("'" + command + "' is not recognized as an internal command.");
+				//writeln("Else: " + command);
+                writeln("'" + command + "' is not recognized as an internal command.");
                 nextCommand();
             }
         }
         catch (StringIndexOutOfBoundsException e){
-        	//System.out.println("Else: " + command);
-            System.out.println("'" + command + "' is not recognized as an internal command.");
+        	//writeln("Else: " + command);
+            writeln("'" + command + "' is not recognized as an internal command.");
             nextCommand();
         }
     }
+	public void write(Obj s){
+		if(screen == null){
+			System.out.print(s);
+		}
+		else{
+			screen.passToGUI(s, true);
+		}
+	}
+	public void writeln(Obj s){
+		if(screen == null){
+		System.out.println(s);
+		}
+		else{
+			screen.passToGUI(s, true);
+		}
+	}
+
 	public void displayDetail(int y){
 		String name;
 		String quantity;
@@ -170,12 +190,12 @@ public class Console{
 		}
 		price= item.substring(x2,x3-1).trim();
 		description=item.substring(x3,item.length()).trim();
-		System.out.println("ID:        "+String.valueOf(y));  		
-		System.out.println("Name:      "+name);  		
-		System.out.println("Qty:       "+quantity);  		
-		System.out.println("Category:  "+category);  		
-		System.out.println("Price:     "+price);  		
-		System.out.println("Desc:      "+description); 
+		writeln("ID:        "+String.valueOf(y));  		
+		writeln("Name:      "+name);  		
+		writeln("Qty:       "+quantity);  		
+		writeln("Category:  "+category);  		
+		writeln("Price:     "+price);  		
+		writeln("Desc:      "+description); 
 		nextCommand();
 	}
 	public void save(){
@@ -186,25 +206,25 @@ public class Console{
 			new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
 		}
 		catch(InterruptedException e){
-			System.out.println("InterruptedException");
+			writeln("InterruptedException");
 		}
 		catch(IOException e){
-			System.out.println("IOException");
+			writeln("IOException");
 		}
-		System.out.println("ID        Name      Qty       Category  Price     Description");
+		writeln("ID        Name      Qty       Category  Price     Description");
 		for(int i=0;i<tmp.size();i++){
-			System.out.print(i);
+			write(i);
 			for(int x=0;x<10-String.valueOf(i).length();x++){
-				System.out.print(" ");
+				write(" ");
 			}
 			displayOne(i);
 		}
-		System.out.println();
-		System.out.println("Please enter an ID to continue.");
+		writeln();
+		writeln("Please enter an ID to continue.");
 		Scanner scanner=new Scanner(System.in);
 		int theInt=-1;
 		while(true){
-			System.out.print("SELECT>");
+			write("SELECT>");
 			try{
 				theInt=scanner.nextInt();
 				
@@ -213,10 +233,10 @@ public class Console{
 				scanner.next();
 			}
 			if(theInt>tmp.size()){
-				System.out.println("An item of that ID does not exist.");
+				writeln("An item of that ID does not exist.");
 			}
 			else if(theInt<0){
-				System.out.println("Input invalid.");
+				writeln("Input invalid.");
 			}
 			else{
 				break;
@@ -226,52 +246,52 @@ public class Console{
 	}
 	public void delete(String command){
 		if(command.toLowerCase().contains("/a") && command.toLowerCase().contains("/i")){
-			System.out.println("Input invalid.");
+			writeln("Input invalid.");
 		}
 		else if(command.toLowerCase().contains("/a")){
 			m.delete();
 			tmp.clear();
-			System.out.println("Inventory Cleared!");
+			writeln("Inventory Cleared!");
 		}
 		else if(command.toLowerCase().contains("/i")){
 			try{
 				tmp.remove(select());
-				System.out.println("Item cleared successfully.");
+				writeln("Item cleared successfully.");
 			}
 			catch(IndexOutOfBoundsException e){
-				System.out.println("An item of that ID does not exist.");
+				writeln("An item of that ID does not exist.");
 				tmp.remove(select());
 			}
 			
 		}
 		else{
-			System.out.println("Removes item(s) from the inventory.");
-            System.out.println();
-            System.out.println("USAGE:");
-            System.out.println("delete [/a] || delete [/i]");
-            System.out.println();
-            System.out.println("  /A           Clear the inventory.");
-            System.out.println("  /I           Select an item to be removed.");
+			writeln("Removes item(s) from the inventory.");
+            writeln();
+            writeln("USAGE:");
+            writeln("delete [/a] || delete [/i]");
+            writeln();
+            writeln("  /A           Clear the inventory.");
+            writeln("  /I           Select an item to be removed.");
 			}
 			nextCommand();	
 	}
     public void help(){
-        System.out.println("For more specific information regarding a command, please type the command name.");
-        System.out.println("ADD            Appends items to the inventory.");
-		System.out.println("DELETE         Removes item(s) from the inventory.");
-        System.out.println("DISPLAY        Displays item(s) from the inventory.");
-		System.out.println("SEARCH         Searches the inventory.");
-        System.out.println("SELL           Removes items from inventory, modifies drawer amount.");
-		System.out.println("GROSS          Displays the gross income accumulated during the session.");
-        System.out.println("CAT            Prints the input to the console");
-        System.out.println("PASSWD         Reset your password.");
-        System.out.println("ABOUT          About this product.");
-        System.out.println("CLEAR          Clears the console.");
-        System.out.println("EXIT           Closes the current session");
+        writeln("For more specific information regarding a command, please type the command name.");
+        writeln("ADD            Appends items to the inventory.");
+		writeln("DELETE         Removes item(s) from the inventory.");
+        writeln("DISPLAY        Displays item(s) from the inventory.");
+		writeln("SEARCH         Searches the inventory.");
+        writeln("SELL           Removes items from inventory, modifies drawer amount.");
+		writeln("GROSS          Displays the gross income accumulated during the session.");
+        writeln("CAT            Prints the input to the console");
+        writeln("PASSWD         Reset your password.");
+        writeln("ABOUT          About this product.");
+        writeln("CLEAR          Clears the console.");
+        writeln("EXIT           Closes the current session");
         nextCommand();
     }
 	public void gross(){
-		System.out.println("This feature has not been implemented.");
+		writeln("This feature has not been implemented.");
 	}
 	public void add(String command){
         int i;
@@ -357,17 +377,17 @@ public class Console{
             addString+="    ";
         }
         tmp.add(addString);
-        System.out.println("Item added to inventory!");
+        writeln("Item added to inventory!");
         nextCommand();
     }
 	public void display(){
-		System.out.println("ID        Name      Qty       Category  Price     Description");
+		writeln("ID        Name      Qty       Category  Price     Description");
 		for(int i=0;i<tmp.size();i++){
-			String n;
-			String q;
-			String c;
-			String p;
-			String d;
+			String n="    ";
+			String q="    ";
+			String c="    ";
+			String p="    ";
+			String d="    ";
 			int x=0;
 			while(! tmp.get(i).substring(0,x).contains("-")){
 				x++;
@@ -389,51 +409,58 @@ public class Console{
 			}
 			p=(tmp.get(i).substring(x2,x3-1).trim());
 			d=(tmp.get(i).substring(x3).trim());
-			System.out.print(tmp.indexOf(String.valueOf(n+"-"+q+"-"+c+"-"+p+"-"+d)));
+			writeln(tmp.get(1));
+			for(int m=0;m<tmp.size();m++){
+				if(n.equals(names.get(m)) && q.equals(quantities.get(m)) && c.equals(categories.get(m)) && p.equals(prices.get(m)) && d.equals(descriptions.get(m))){
+					write(m);
+				}
+			}
+			
+			//write(tmp.indexOf(String.valueOf(n+"-"+q+"-"+c+"-"+p+"-"+d)));
 			for(int a=0;a<10-String.valueOf(a).length();a++){
-				System.out.print(" ");
+				write(" ");
 			}
 			if(n.length()<10){
-				System.out.print(n);
+				write(n);
 				for(int u=0;u<10-n.length();u++){
-					System.out.print(" ");
+					write(" ");
 				}
 			}
 			else{
-				System.out.print(n.substring(0,9)+" ");
+				write(n.substring(0,9)+" ");
 			}
 			if(q.length()<10){
-				System.out.print(q);
+				write(q);
 				for(int u=0;u<10-q.length();u++){
-					System.out.print(" ");
+					write(" ");
 				}
 			}
 			else{
-				System.out.print(q.substring(0,9)+" ");
+				write(q.substring(0,9)+" ");
 			}
 			if(c.length()<10){
-				System.out.print(c);
+				write(c);
 				for(int u=0;u<10-c.length();u++){
-					System.out.print(" ");
+					write(" ");
 				}
 			}
 			else{
-				System.out.print(c.substring(0,9)+" ");
+				write(c.substring(0,9)+" ");
 			}
 			if(p.length()<10){
-				System.out.print(p);
+				write(p);
 				for(int u=0;u<10-p.length();u++){
-					System.out.print(" ");
+					write(" ");
 				}
 			}
 			else{
-				System.out.print(p.substring(0,9)+" ");
+				write(p.substring(0,9)+" ");
 			}
 			if(d.length()<10){
-				System.out.println(d);
+				writeln(d);
 			}
 			else{
-				System.out.println(d.substring(0,10));
+				writeln(d.substring(0,10));
 			}
 		}
 		nextCommand();
@@ -466,50 +493,50 @@ public class Console{
 		p=(tmp.get(i).substring(x2,x3-1).trim());
 		d=(tmp.get(i).substring(x3).trim());
 		if(n.length()<10){
-			System.out.print(n);
+			write(n);
 			for(int u=0;u<10-n.length();u++){
-				System.out.print(" ");
+				write(" ");
 			}
 		}
 		else{
-			System.out.print(n.substring(0,9)+" ");
+			write(n.substring(0,9)+" ");
 		}
 		if(q.length()<10){
-			System.out.print(q);
+			write(q);
 			for(int u=0;u<10-q.length();u++){
-				System.out.print(" ");
+				write(" ");
 			}
 		}
 		else{
-			System.out.print(q.substring(0,9)+" ");
+			write(q.substring(0,9)+" ");
 		}
 		if(c.length()<10){
-			System.out.print(c);
+			write(c);
 			for(int u=0;u<10-c.length();u++){
-				System.out.print(" ");
+				write(" ");
 			}
 		}
 		else{
-			System.out.print(c.substring(0,9)+" ");
+			write(c.substring(0,9)+" ");
 		}
 		if(p.length()<10){
-			System.out.print(p);
+			write(p);
 			for(int u=0;u<10-p.length();u++){
-				System.out.print(" ");
+				write(" ");
 			}
 		}
 		else{
-			System.out.print(p.substring(0,9)+" ");
+			write(p.substring(0,9)+" ");
 		}
 		if(d.length()<10){
-			System.out.print(d);
+			write(d);
 			for(int u=0;u<10-d.length();u++){
-				System.out.print(" ");
+				write(" ");
 			}
-			System.out.println();
+			writeln();
 		}
 		else{
-			System.out.println(d.substring(0,9)+" ");
+			writeln(d.substring(0,9)+" ");
 		}
 	}
     public void search(String command){
@@ -609,7 +636,7 @@ public class Console{
 				filter.remove(i);
 			}
 		}
-		System.out.println("Name      Qty       Category  Price     Description");
+		writeln("Name      Qty       Category  Price     Description");
 		for(int i=0;i<filter.size();i++){
 			String n;
 			String q;
@@ -638,46 +665,46 @@ public class Console{
 			p=(filter.get(i).substring(x2,x3-1).trim());
 			d=(filter.get(i).substring(x3).trim());
 			if(n.length()<10){
-				System.out.print(n);
+				write(n);
 				for(int u=0;u<10-n.length();u++){
-					System.out.print(" ");
+					write(" ");
 				}
 			}
 			else{
-				System.out.print(n.substring(0,9)+" ");
+				write(n.substring(0,9)+" ");
 			}
 			if(q.length()<10){
-				System.out.print(q);
+				write(q);
 				for(int u=0;u<10-q.length();u++){
-					System.out.print(" ");
+					write(" ");
 				}
 			}
 			else{
-				System.out.print(q.substring(0,9)+" ");
+				write(q.substring(0,9)+" ");
 			}
 			if(c.length()<10){
-				System.out.print(c);
+				write(c);
 				for(int u=0;u<10-c.length();u++){
-					System.out.print(" ");
+					write(" ");
 				}
 			}
 			else{
-				System.out.print(c.substring(0,9)+" ");
+				write(c.substring(0,9)+" ");
 			}
 			if(p.length()<10){
-				System.out.print(p);
+				write(p);
 				for(int u=0;u<10-p.length();u++){
-					System.out.print(" ");
+					write(" ");
 				}
 			}
 			else{
-				System.out.print(p.substring(0,9)+" ");
+				write(p.substring(0,9)+" ");
 			}
 			if(d.length()<10){
-				System.out.println(d);
+				writeln(d);
 			}
 			else{
-				System.out.println(d.substring(0,10));
+				writeln(d.substring(0,10));
 			}
 		}
 		nextCommand();
@@ -687,38 +714,99 @@ public class Console{
             new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
         }
         catch(InterruptedException e){
-            System.out.println("InterruptedException");
+            writeln("InterruptedException");
         }
         catch(IOException e){
-            System.out.println("IOException");
+            writeln("IOException");
         }
-        System.out.println("Oxi Inventory Management is a product developed by MidWestOxidation Enterprise (c) 2016.");
-        System.out.println("The intended purpose was to create a simple, secure, and powerful interface that can be used to manage small businesses.");
-        System.out.println("For more information, please visit http://www.midwestoxidation.com/oxi");
-        System.out.println();
+        writeln("Oxi Inventory Management is a product developed by MidWestOxidation Enterprise (c) 2016.");
+        writeln("The intended purpose was to create a simple, secure, and powerful interface that can be used to manage small businesses.");
+        writeln("For more information, please visit http://www.midwestoxidation.com/oxi");
+        writeln();
         nextCommand();
     }
-    public void sell(){
-        System.out.println("This feature has not yet been implemented");
-        nextCommand();
+    public void sell(int y){
+        String name;
+		String quantity;
+		String category;
+		String price;
+		String description;
+		String item;
+		item=tmp.get(y);
+		int x=0;
+		while(! item.substring(0,x).contains("-")){
+			x++;
+		}
+		name =item.substring(0,x-1).trim();
+		int x1=x;
+		while(! item.substring(x,x1).contains("-")){
+			x1++;
+		}
+		quantity=item.substring(x,x1-1).trim();
+		int x2=x1;
+		while(! item.substring(x1,x2).contains("-")){
+			x2++;
+		}
+		category= item.substring(x1,x2-1).trim();
+		int x3=x2;
+		while(! item.substring(x2,x3).contains("-")){
+			x3++;
+		}
+		price= item.substring(x2,x3-1).trim();
+		description=item.substring(x3,item.length()).trim();
+		writeln("How much quantity of this item would you like to sell?");
+		write("SELL>");
+		while(true){
+			try{
+				int amount=scanner.nextInt();
+				if(Integer.valueOf(quantity)-amount>0){
+					tmp.set(y, name+"-"+String.valueOf(Integer.valueOf(quantity)-amount)+"-"+category+"-"+price+"-"+description);
+					writeln("Item sold");
+					break;
+				}
+				else if(Integer.valueOf(quantity)-amount==0){
+					tmp.remove(y);
+					writeln("Item sold");
+					break;
+				}
+				else if(Integer.valueOf(quantity)-amount<0 || Integer.valueOf(quantity)==0 || Integer.valueOf(quantity)<0){
+					writeln("You tried to sell more than you have.");
+					write("SELL>");
+				}
+				else{
+					writeln("Invalid input");
+					write("SELL>");
+				}
+			}
+			catch(InputMismatchException e){
+				writeln("Only numbers are accepted...");
+				write("SELL>");
+				scanner.next();
+			}
+		}
+		if(Integer.valueOf(quantity)<=0){
+			tmp.remove(y);
+		}
+		gross+=Integer.valueOf(price);
+		nextCommand();
     }
     public void clear(){
         try{
             new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
         }
         catch (InterruptedException e){
-            System.out.println("InterruptedException");
+            writeln("InterruptedException");
         }
         catch(IOException e){
-            System.out.println("IOException");
+            writeln("IOException");
         }
-        System.out.println("Oxi Inventory Management [Version Beta 0.8.2]");
-        System.out.println("(c) 2016 MidWestOxidation Enterprise. All rights reserved.");
-        System.out.println();
+        writeln("Oxi Inventory Management [Version Beta 0.8.2]");
+        writeln("(c) 2016 MidWestOxidation Enterprise. All rights reserved.");
+        writeln();
         nextCommand();
     }
 	public void newPass(){
-        System.out.println("This feature has not yet been implemented");
+        writeln("This feature has not yet been implemented");
         nextCommand();
     }
 	public void popArray(){
@@ -729,7 +817,7 @@ public class Console{
             }
         }
         catch(FileNotFoundException e){
-            //System.out.println("FileNotFoundException");
+            //writeln("FileNotFoundException");
         }
     }
 	public void updateArrays(){
@@ -772,10 +860,10 @@ public class Console{
             printWriter.close();
         }
         catch(FileNotFoundException e){
-            System.out.println("FileNotFoundException");
+            writeln("FileNotFoundException");
         }
         catch(UnsupportedEncodingException e){
-            System.out.println("UnsupportedEncodingException");
+            writeln("UnsupportedEncodingException");
         }
     }
 	public String encode(String msg){
@@ -806,18 +894,13 @@ public class Console{
 /**
 ----Feature ideas----
 Implement edit feature
-this is a thing too now//Save without quitting
 obscure password fields
 passwd
-select is a thing now//Select 
 search does not display id's
 
 
 -----Known Bugs----
-fixed //FileNotFoundException on first launch due to mem.txt not existing (mutable- does not affect execution)
 Program closes on incorrect password
-Some users experience valid passwords not letting them in
 Searching by anything but name sometimes does not work
+display returns negative id
 **/
-
-
