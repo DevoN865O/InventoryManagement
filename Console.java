@@ -9,7 +9,7 @@ public class Console{
     public String[] letters= new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "_", "-", "=", "+", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", " "};
     public String[] shifted= new String[]{"m", "l", "8", "q", "A", "P", "R", "W", "C", "h", "n", "k", "1", "7", "z", "B", "o", "9", "2", "g", "f", "6", "p", "O", "0", "a", "e", "3", "j", "Q", "V", "-", "4", "=", "b", "d", "J", "N", " ", "X", "", "M", "I", "U", "J", "i", "5", "y", "c", "w", "*", "T", "$", "%", "S", "v", "^", "L", "+", "&", "Y", "u", "#", "D", "_", "", "r", "Z", "H", "!", "s", "@", "F", "t", "x", "G", "E"};
     private String command;
-	private int gross;
+	private double gross;
     private ArrayList<String>tmp= new ArrayList<String>();
     private ArrayList<String>names= new ArrayList<String>();
     private ArrayList<String>prices= new ArrayList<String>();
@@ -17,6 +17,8 @@ public class Console{
     private ArrayList<String>descriptions= new ArrayList<String>();
     private ArrayList<String>quantities= new ArrayList<String>();
 	private ArrayList<String>filter= new ArrayList<String>();
+	private int amount;
+	private boolean gone;
 	Console(){
 		String answer = "";
 		popArray();
@@ -52,7 +54,10 @@ public class Console{
         try{
             if(command.toLowerCase().equals("help")){
                 help();
-            } 
+            }
+			else if(command.equals("") || command==null){
+				
+			}
 			else if (command.toLowerCase().substring(0, 3).equals("add")){
                 if(command.length() > 3){
                     add(command);
@@ -68,13 +73,16 @@ public class Console{
                     writeln("  /P           Item price.");
                     writeln("  /D           Item description.");
                     writeln("  /Q           Item quantity.");
-                    if(screen == null){
+                    if(screen==null){
 						nextCommand();
 					}
                 }
             } 
 			else if(command.toLowerCase().equals("sell")){
                 sell(select());
+				if(screen==null){ 
+					nextCommand();
+				}
             } 
 			else if(command.toLowerCase().equals("clear")){//claims command does not exist
                 clear();
@@ -89,7 +97,7 @@ public class Console{
                 else{
 					writeln(command.substring(4, command.length()));
                 }
-				if(screen == null){ nextCommand();}
+				if(screen==null){ nextCommand();}
             } 
 			else if(command.toLowerCase().equals("save")){
 				writeArray();
@@ -97,13 +105,13 @@ public class Console{
 				popArray();
 				updateArrays();
 				writeln("Saved successfully.");
-				if(screen == null){ 
+				if(screen==null){ 
 					nextCommand();
 				}
 			}
 			else if(command.toLowerCase().equals("passwd")){
                 newPass();
-                if(screen == null){ 
+                if(screen==null){ 
 					nextCommand();
 				}
             } 
@@ -112,14 +120,14 @@ public class Console{
             }
 			else if(command.toLowerCase().equals("gross")){
 				gross();
-				if(screen == null){ 
+				if(screen==null){ 
 					nextCommand();
 				}
 			}
 			else if(command.toLowerCase().substring(0,7).equals("display")){
 				if(command.toLowerCase().contains("/i") && command.toLowerCase().contains("/a")){
 					writeln("Input invalid.");
-					if(screen == null){ 
+					if(screen==null){ 
 						nextCommand();
 					}
 				}
@@ -137,7 +145,7 @@ public class Console{
                     writeln("");
                     writeln("  /I           Displays a specific item.");
                     writeln("  /A           Displays all items.");
-                    if(screen == null){ 
+                    if(screen==null){ 
 						nextCommand();
 					}
 				}
@@ -160,7 +168,7 @@ public class Console{
                     writeln("  /P           Item price.");
                     writeln("  /D           Item description.");
                     writeln("  /Q           Item quantity.");
-                    if(screen == null){ 
+                    if(screen==null){ 
 						nextCommand();
 					}
 				}
@@ -177,7 +185,7 @@ public class Console{
                     writeln("  /P           Item price.");
                     writeln("  /D           Item description.");
                     writeln("  /Q           Item quantity.");
-                    if(screen == null){ 
+                    if(screen==null){ 
 						nextCommand();
 					}
 				}
@@ -186,17 +194,16 @@ public class Console{
 				}
 			}
 			else{
-				//writeln("Else: " + command);
                 writeln("'" + command + "' is not recognized as an internal command.");
-                if(screen == null){ 
+                if(screen==null){ 
 					nextCommand();
 				}
             }
         }
         catch (StringIndexOutOfBoundsException e){
-        	//writeln("Else: " + command);
-            writeln("'" + command + "' is not recognized as an internal command.");
-            if(screen == null){ 
+			e.printStackTrace();
+        	writeln("'" + command + "' is not recognized as an internal command.");
+            if(screen==null){ 
 				nextCommand();
 			}
         }
@@ -241,7 +248,7 @@ public class Console{
 		else{
 			//writeln("The inventory is empty...");
 		}
-			if(screen == null){ 
+			if(screen==null){ 
 				nextCommand();
 			}
 	}
@@ -326,10 +333,8 @@ public class Console{
             writeln("");
             writeln("  /A           Clear the inventory.");
             writeln("  /I           Select an item to be removed.");
-			}
-			if(screen == null){ 
-				nextCommand();
-			}	
+		}
+			
 	}
     public void help(){
         writeln("For more specific information regarding a command, please type the command name.");
@@ -345,7 +350,7 @@ public class Console{
         writeln("ABOUT          About this product.");
         writeln("CLEAR          Clears the console.");
         writeln("EXIT           Closes the current session");
-        if(screen == null){ 
+        if(screen==null){ 
 			nextCommand();
 		}
     }
@@ -353,94 +358,104 @@ public class Console{
 		writeln('$'+String.valueOf(gross));
 	}
 	public void add(String command){
-        int i;
-        String addString="";
-		String name;
-		String category;
-		String price;
-		String description;
-		String quantity;
-        if(command.contains("/n")){
-            i=0;
-            while(command.substring(i).contains("/n")){
-                i++;
-            }
-            name=command.substring(i+1);
-            i=name.length();
-            while(name.substring(0,i).contains("/")){
-                i--;
-            }
-            addString+=name.substring(0,i).trim()+"-";
-        }
-		else{
-            addString+="    -";
-        }
-        if(command.contains("/q")){
-            i=0;
-            while(command.substring(i).contains("/q")){
-                i++;
-            }
-            quantity=command.substring(i+1);
-            i=quantity.length();
-            while(quantity.substring(0,i).contains("/")){
-                i--;
-            }
-            addString+=quantity.substring(0,i).trim()+"-";
-        }
-		else{
-            addString+="    -";
-        }
-        if(command.contains("/c")){
-            i=0;
-            while(command.substring(i).contains("/c")){
-                i++;
-            }
-            category=command.substring(i+1);
-            i=category.length();
-            while(category.substring(0,i).contains("/")){
-                i--;
-            }
-            addString+=category.substring(0,i).trim()+"-";
-        }
-		else{
-            addString+="    -";
-        }
-        if(command.contains("/p")){
-            i=0;
-            while(command.substring(i).contains("/p")){
-                i++;
-            }
-            price=command.substring(i+1);
-            i=price.length();
-            while(price.substring(0,i).contains("/")){
-                i--;
-            }
-            addString+=price.substring(0,i).trim()+"-";
-        }
-		else{
-            addString+="    -";
-        }
-        if(command.contains("/d")){
-            i=0;
-            while(command.substring(i).contains("/d")){
-                i++;
-            }
-            description=command.substring(i+1);
-            i=description.length();
-            while(description.substring(0,i).contains("/")){
-                i--;
-            }
-            addString+=description.substring(0,i).trim();
-        }
-		else{
-            addString+="    ";
-        }
-        tmp.add(addString);
-        writeln("Item added to inventory!");
-        if(screen == null){ 
-			nextCommand();
+        try{
+			int i;
+			String addString="";
+			String name;
+			String category;
+			String price;
+			String description;
+			String quantity;
+			if(command.contains("/n")){
+				i=0;
+				while(command.substring(i).contains("/n")){
+					i++;
+				}
+				name=command.substring(i+1);
+				i=name.length();
+				while(name.substring(0,i).contains("/")){
+					i--;
+				}
+				addString+=name.substring(0,i).trim()+"-";
+			}
+			else{
+				addString+="    -";
+			}
+			if(command.contains("/q")){
+				i=0;
+				while(command.substring(i).contains("/q")){
+					i++;
+				}
+				quantity=command.substring(i+1);
+				i=quantity.length();
+				while(quantity.substring(0,i).contains("/")){
+					i--;
+				}
+				quantity=String.valueOf(Integer.valueOf(quantity.substring(0,i).trim()));
+				addString+=quantity+"-";
+			}
+			else{
+				addString+="    -";
+			}
+			if(command.contains("/c")){
+				i=0;
+				while(command.substring(i).contains("/c")){
+					i++;
+				}
+				category=command.substring(i+1);
+				i=category.length();
+				while(category.substring(0,i).contains("/")){
+					i--;
+				}
+				addString+=category.substring(0,i).trim()+"-";
+			}
+			else{
+				addString+="    -";
+			}
+			if(command.contains("/p")){
+				i=0;
+				while(command.substring(i).contains("/p")){
+					i++;
+				}
+				price=command.substring(i+1);
+				i=price.length();
+				while(price.substring(0,i).contains("/")){
+					i--;
+				}
+				price=String.valueOf(Integer.valueOf(price.substring(0,i).trim()));
+				addString+=price+"-";
+			}
+			else{
+				addString+="    -";
+			}
+			if(command.contains("/d")){
+				i=0;
+				while(command.substring(i).contains("/d")){
+					i++;
+				}
+				description=command.substring(i+1);
+				i=description.length();
+				while(description.substring(0,i).contains("/")){
+					i--;
+				}
+				addString+=description.substring(0,i).trim();
+			}
+			else{
+				addString+="    ";
+			}
+			tmp.add(addString);
+			writeln("Item added to inventory!");
+			if(screen==null){ 
+				nextCommand();
+			}
 		}
-    }
+		catch(NumberFormatException e){
+			writeln("Please make sure you provide only numbers for the price and quantity attributes.");
+			if(screen==null){
+				nextCommand();
+			}
+		}
+	}
 	public void display(){
 		if(tmp.size()==0){
 			writeln("The inventory is empty...");
@@ -529,7 +544,7 @@ public class Console{
 				}
 			}
 		}
-		if(screen == null){ 
+		if(screen==null){ 
 			nextCommand();
 		}
 	}
@@ -792,7 +807,7 @@ public class Console{
 				}
 			}
 		}
-		if(screen == null){ 
+		if(screen==null){ 
 			nextCommand();
 		}
     }
@@ -810,7 +825,7 @@ public class Console{
         writeln("The intended purpose was to create a simple, secure, and powerful interface that can be used to manage small businesses.");
         writeln("For more information, please visit http://www.midwestoxidation.com/oxi");
         writeln("");
-        if(screen == null){ 
+        if(screen==null){ 
 			nextCommand();
 		}
     }
@@ -919,7 +934,7 @@ public class Console{
             description=descriptions.get(y);
         }
 		tmp.set(y,name+quantity+category+price+description);
-		if(screen == null){
+		if(screen==null){
 			nextCommand();
 		}
 	}
@@ -954,39 +969,31 @@ public class Console{
 		description=item.substring(x3,item.length()).trim();
 		writeln("How much quantity of this item would you like to sell?");
 		write("SELL>");
-		while(true){
-			try{
-				int amount=scanner.nextInt();
-				if(Integer.valueOf(quantity)-amount>0){
-					tmp.set(y, name+"-"+String.valueOf(Integer.valueOf(quantity)-amount)+"-"+category+"-"+price+"-"+description);
-					writeln("Item sold");
-					break;
-				}
-				else if(Integer.valueOf(quantity)-amount==0){
-					tmp.remove(y);
-					writeln("Item sold");
-					break;
-				}
-				else if(Integer.valueOf(quantity)-amount<0 || Integer.valueOf(quantity)==0 || Integer.valueOf(quantity)<0){
-					writeln("You tried to sell more than you have.");
-					write("SELL>");
-				}
-				else{
-					writeln("Invalid input");
-					write("SELL>");
-				}
+		try{
+			amount=scanner.nextInt();
+			if(Integer.valueOf(quantity)-amount>0){
+				tmp.set(y, name+"-"+String.valueOf(Integer.valueOf(quantity)-amount)+"-"+category+"-"+price+"-"+description);
+				writeln("Item sold");
 			}
-			catch(InputMismatchException e){
-				writeln("Only numbers are accepted...");
-				write("SELL>");
-				scanner.next();
+			else if(Integer.valueOf(quantity)-amount==0){
+				writeln("Item sold");
+				gone=true;
+			}
+			else if(Integer.valueOf(quantity)-amount<0 || Integer.valueOf(quantity)==0 || Integer.valueOf(quantity)<0){
+				writeln("You tried to sell more than you have.");
+			}
+			else{
+				writeln("Invalid input");
 			}
 		}
-		if(Integer.valueOf(quantity)<=0){
-			tmp.remove(y);
+		catch(InputMismatchException e){
+			writeln("Only numbers are accepted...");
 		}
-		gross+=Integer.valueOf(price);
-		if(screen == null){ nextCommand();}
+		gross+=(Integer.valueOf(price)*amount);
+		if(gone){
+			writeln("You have items in the inventory with no stock remaining. Please restock, or remove these items.");
+		}
+		nextCommand();
     }
     public void clear(){
         try{
@@ -1001,13 +1008,13 @@ public class Console{
         writeln("Oxi Inventory Management [Version Beta 0.8.2]");
         writeln("(c) 2016 MidWestOxidation Enterprise. All rights reserved.");
         writeln("");
-        if(screen == null){ 
+        if(screen==null){ 
 			nextCommand();
 		}
     }
 	public void newPass(){
         writeln("This feature has not yet been implemented");
-        if(screen == null){ 
+        if(screen==null){ 
 			nextCommand();
 		}
     }
@@ -1093,7 +1100,7 @@ public class Console{
 		return index;
 	}
 	public void write(Object s){
-		if(screen == null){
+		if(screen==null){
 			System.out.print(s);;
 		}
 		else{
@@ -1116,7 +1123,7 @@ public class Console{
 		}
 	}
 	public void writeln(String s){
-		if(screen == null){
+		if(screen==null){
 			System.out.println(s);
 		}
 		else{
@@ -1138,6 +1145,9 @@ public class Console{
 		screen.passToGUI(cast, false);
 		}
 				
+	}
+	public void setScreen(Screen s){
+		screen=s;
 	}
 }
 /**
